@@ -4,6 +4,9 @@ from flask import Flask, jsonify, request
 # from pyngrok import ngrok, conf
 import json
 import requests
+
+import itemService
+
 # conf.get_default().verify_ssl = False
 # Add this line before connecting
 # ngrok.set_auth_token("2twNTpr5zG3U0ckMbzhUwg0acHA_388Ufsb8ZR56f38NyUsS3")
@@ -164,8 +167,10 @@ def handle_text_message(message, to_number):
     text_body = message['text']['body']
     print(f"Received text message: {text_body}")
 
+    output = itemService.getWhatsappResponse("conversation", text_body)
+
     # Respond with the same text
-    send_text_message(to_number, text_body)
+    send_text_message(to_number, output)
 
 
 def handle_media_message(message, media_type, to_number):
