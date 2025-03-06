@@ -11,100 +11,18 @@ import itemService
 # Add this line before connecting
 # ngrok.set_auth_token("2twNTpr5zG3U0ckMbzhUwg0acHA_388Ufsb8ZR56f38NyUsS3")
 
-# class AudioMessage:
-#     def __init__(self, to, audio_url):
-#         self.messaging_product = "whatsapp"
-#         self.to = to
-#         self.type = "audio"
-#         self.audio = {"link": audio_url}
-#
-#     def to_json(self):
-#         return {
-#             "messaging_product": self.messaging_product,
-#             "to": self.to,
-#             "type": self.type,
-#             "audio": self.audio
-#         }
-#
-#
-# class ImageMessage:
-#     def __init__(self, to, image_url):
-#         self.messaging_product = "whatsapp"
-#         self.to = to
-#         self.type = "image"
-#         self.image = {
-#             "link": image_url,
-#             "caption": "Image sent via WhatsApp API"  # Optional caption
-#         }
-#
-#     def to_json(self):
-#         return {
-#             "messaging_product": self.messaging_product,
-#             "to": self.to,
-#             "type": self.type,
-#             "image": self.image
-#         }
-#
-# def send_whatsapp_image(to: str, token: str, image_url: str):
-#     url = "https://graph.facebook.com/v22.0/601304399725157/messages"
-#
-#     # Create message payload
-#     message = ImageMessage(to, image_url)
-#
-#     # Set headers
-#     headers = {
-#         "Content-Type": "application/json",
-#         "Authorization": f"Bearer {token}"
-#     }
-#
-#     # Send request
-#     response = requests.post(
-#         url,
-#         headers=headers,
-#         json=message.to_json()
-#     )
-#
-#     print("Response Status:", response.status_code)
-#     return response
-#
-# def send_whatsapp_audio(to: str, token: str, audio_url: str):
-#     url = "https://graph.facebook.com/v22.0/601304399725157/messages"
-#
-#     # Create message payload
-#     message = AudioMessage(to, audio_url)
-#
-#     # Set headers
-#     headers = {
-#         "Content-Type": "application/json",
-#         "Authorization": f"Bearer {token}"
-#     }
-#
-#     # Send request
-#     response = requests.post(
-#         url,
-#         headers=headers,
-#         json=message.to_json()
-#     )
-#
-#     print("Response Status:", response.status_code)
-#     return response
 app = Flask(__name__)
 
-# @app.route('/', methods=['GET'])
-# def hello_world():
-#     return jsonify({
-#         "message": "Hello World",
-#         "status": "success"
-#     })
 # Replace with your third-party provider's API credentials
 WHATSAPP_API_URL = 'https://graph.facebook.com/v22.0/601304399725157/messages'
 PHONE_NUMBER = '+917503603082'
 
 recipient = "+919041047119"
 # update this token if you get token expiry issue
-ACCESS_TOKEN = "EAAP3nUnNbEkBO3Gy0RClA3BI7nEea9FQAi272tdY6dHYrNv5SXDrI2b2ULMWE5ZBMx4PvEBmuGJwUtFFWA5ysGuhI3QnvIWKJxr3HdFHeL22VnYvRxOPCM1Lk8CdlhxMujJXSjvavFW7yFQQl59SQC3Gp6zM0KWfjsd3254szs1wYAWHnZCTg7kZBgiWocqiRpeGsltEEokFWLuQFmHKrD7xZBVzNZA3cM0YNCHph"
+ACCESS_TOKEN = "EAAP3nUnNbEkBO3fCGYCqWPZCEngoRpvcBQdCa1tIApZBXVQPssQ8QbccPZANJZBStUSKiwWxJwk2lzsnXjxXc4NwFYrliWunwfWnZANSwp0NrviPAfwyrofe5XPxPU48QKtPrLFKLmMr9G3L5zfXQL5WA7rxxGZB3ZCbNd513sCuiZCJ7o7anlN2ROfZAO2u0XKsiFUkXPt1fkRAqVNF1Jzcn0jLEZBcZBxF5aomEQHbzKn"
 audio_url = "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp3"
 STATIC_VERIFY_TOKEN_CONST="EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
+PHONE_NUMBER_ID=601304399725157
 
 @app.route('/webhook', methods=['GET'])
 def verify_webhook():
@@ -172,18 +90,6 @@ def handle_text_message(message, to_number):
     # Respond with the same text
     send_text_message(to_number, output)
 
-
-def handle_media_message(message, media_type, to_number):
-    """Function to handle media messages and send a media response"""
-    media_id = message[media_type]['id']
-    mime_type = message[media_type]['mime_type']
-    image_url = get_media_url(media_id)
-    print(f"Received {media_type} message: {image_url}, MIME Type: {mime_type}")
-
-    # Respond with the same media (re-use the media URL)
-    send_media_message(to_number, media_type, image_url, mime_type)
-
-
 def handle_location_message(message, to_number):
     """Function to handle incoming location messages and send a location response"""
     latitude = message['location']['latitude']
@@ -205,20 +111,6 @@ def send_text_message(to_number, text_body):
         }
     }
     send_message(response_data)
-
-
-def send_media_message(to_number, media_type, media_url, mime_type):
-    """Send a media message (image, video, etc.) back to the user"""
-    response_data = {
-        "to": to_number,
-        "messaging_product": "whatsapp",
-        "type": media_type,
-        media_type: {
-            "link": media_url
-        }
-    }
-    send_message(response_data)
-
 
 def send_location_message(to_number, latitude, longitude):
     """Send a location message back to the user"""
@@ -260,13 +152,21 @@ def health_check():
         "status": "success"
     })
 
+def handle_media_message(message, media_type, to_number):
+    media_id = message[media_type]['id']
+    mime_type = message[media_type]['mime_type']
+    original_media_url = get_media_url(media_id)
+    if not original_media_url:
+        print("Failed to retrieve media URL")
+        return
 
-# Function to retrieve the media URL using media_id
+    print(f"Received {media_type}: {media_id}, MIME: {mime_type}, Original URL: {original_media_url}")
+
+    handle_received_media(media_id, media_type, mime_type, to_number, ACCESS_TOKEN, PHONE_NUMBER_ID)
+
 def get_media_url(media_id):
-    url = f'https://graph.facebook.com/v15.0/{media_id}'
-    headers = {
-        'Authorization': f'Bearer {ACCESS_TOKEN}'
-    }
+    url = f'https://graph.facebook.com/v22.0/{media_id}?fields=url'
+    headers = {'Authorization': f'Bearer {ACCESS_TOKEN}'}
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
@@ -275,6 +175,61 @@ def get_media_url(media_id):
     else:
         print(f"Failed to get media URL: {response.status_code}, {response.text}")
         return None
+
+def handle_received_media(media_id, media_type, mime_type, to_number, token, phone_number_id):
+
+    # Step 1: Get Media URL from WhatsApp
+    media_url = get_media_url(media_id)
+    if not media_url:
+        print("Failed to retrieve media URL.")
+        return
+
+    # Step 2: Download media locally
+    filepath = f'/tmp/{media_id}'
+    headers = {'Authorization': f'Bearer {token}'}
+    media_response = requests.get(media_url, headers=headers)
+    if media_response.status_code != 200:
+        print(f"Media download failed: {media_response.status_code}, {media_response.text}")
+        return
+
+    with open(filepath, 'wb') as f:
+        f.write(media_response.content)
+
+    upload_url = f"https://graph.facebook.com/v22.0/{phone_number_id}/media"
+    headers = {'Authorization': f'Bearer {token}'}
+    data = {
+        'messaging_product': 'whatsapp'
+    }
+    with open(filepath, 'rb') as file_data:
+        upload_response = requests.post(
+            upload_url,
+            headers=headers,
+            data=data,  # ✅ this line was missing
+            files={'file': (filepath.split("/")[-1], file_data, mime_type)}
+        )
+
+    if upload_response.status_code != 200:
+        print(f"Media upload failed: {upload_response.status_code}, {upload_response.text}")
+        return
+
+    new_media_id = upload_response.json().get('id')
+
+    # Step 4: Send media message using the new media_id
+    send_message_url = f"https://graph.facebook.com/v22.0/{phone_number_id}/messages"
+    headers = {'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'}
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to_number,
+        "type": media_type,
+        media_type: {"id": new_media_id}
+    }
+
+    send_response = requests.post(send_message_url, headers=headers, json=payload)
+
+    if send_response.status_code == 200:
+        print("Media message sent successfully.")
+    else:
+        print(f"Failed to send message: {send_response.status_code}, {send_response.text}")
 
 
 if __name__ == '__main__':
