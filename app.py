@@ -248,6 +248,12 @@ def send_message(response_data):
     else:
         print(f"Failed to send message. Status code: {response.status_code}, Error: {response.text}")
 
+@app.route('/health-check',methods=['GET'])
+def health_check():
+    return jsonify({
+        "message": "Hello World",
+        "status": "success"
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
