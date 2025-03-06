@@ -263,7 +263,7 @@ def health_check():
 
 # Function to retrieve the media URL using media_id
 def get_media_url(media_id):
-    url = f'https://graph.facebook.com/v22.0/601304399725157/media/{media_id}'
+    url = f'https://graph.facebook.com/v15.0/{media_id}'
     headers = {
         'Authorization': f'Bearer {ACCESS_TOKEN}'
     }
