@@ -98,20 +98,21 @@ WHATSAPP_API_URL = 'https://graph.facebook.com/v22.0/601304399725157/messages'
 PHONE_NUMBER = '+917503603082'
 
 recipient = "+919041047119"
-ACCESS_TOKEN = "EAAh5gkR5E70BOxfEgkYZAxztMzjxLO0bkeZC2ZA863r5bpa3gC89iZAoZAoCXWWL9NGrudoNGPEvEmIgIieom4aN2xMHHowuKE8gQxBBwiZBPRE6iVbgdACYi46xZAz7uE7RApxPTaFYxujPuNVIOpNmECtbzNyPJT6nQmXDqmP1db4xstZA2JhZB8RWTOWfBWGQRsXMPLDTkyZAgIeFZAYOsVGYCJ2RtcLW7Ct4LQmJnDX"
+# update this token if you get token expiry issue
+ACCESS_TOKEN = "EAAP3nUnNbEkBO3Gy0RClA3BI7nEea9FQAi272tdY6dHYrNv5SXDrI2b2ULMWE5ZBMx4PvEBmuGJwUtFFWA5ysGuhI3QnvIWKJxr3HdFHeL22VnYvRxOPCM1Lk8CdlhxMujJXSjvavFW7yFQQl59SQC3Gp6zM0KWfjsd3254szs1wYAWHnZCTg7kZBgiWocqiRpeGsltEEokFWLuQFmHKrD7xZBVzNZA3cM0YNCHph"
 audio_url = "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp3"
-VERIFY_TOKEN="EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
+STATIC_VERIFY_TOKEN_CONST="EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
 
 @app.route('/webhook', methods=['GET'])
 def verify_webhook():
     """Handles the webhook verification request from WhatsApp"""
-    # Get the 'hub.mode', 'hub.challenge', and 'hub.verify_token' from the query parameters
+    # Get the 'hub.mode', 'hub.challenge', and 'hub.STATIC_verify_token_CONST' from the query parameters
     mode = request.args.get('hub.mode')
     challenge = request.args.get('hub.challenge')
-    token = request.args.get('hub.verify_token')
+    token = request.args.get('hub.STATIC_verify_token_CONST')
 
     # Check if the verify token matches
-    if token == VERIFY_TOKEN:
+    if token == STATIC_VERIFY_TOKEN_CONST:
         # If the token is valid, return the challenge to complete the verification
         return str(challenge), 200
     else:
