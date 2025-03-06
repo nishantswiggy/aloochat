@@ -207,15 +207,11 @@ def send_media_message(to_number, media_type, media_url, mime_type):
     response_data = {
         "to": to_number,
         "messaging_product": "whatsapp",
-        "messages": [
-            {
-                "type": media_type,
-                media_type: {
-                    "url": media_url,
-                    "mime_type": mime_type
-                }
-            }
-        ]
+        "type": media_type,
+        media_type: {
+            "url": media_url,
+            "mime_type": mime_type
+        }
     }
     send_message(response_data)
 
