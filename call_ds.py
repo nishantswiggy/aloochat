@@ -41,17 +41,19 @@ def call_ds(message, conversation_id):
     response = chat_endpoint(post_request_body["user_id"], post_request_body["message"],
                              post_request_body["conversation_id"], post_request_body["personality"])
     print(f"call_ds response: {response}")
-    return response.response
+    return response
 
 
+# Initialize FastAPI
 app = FastAPI(title="Bedrock LLM Chatbot with Memory & Intelligent State")
 
 # Store conversation memory per user session
 conversations: Dict[str, ConversationBufferMemory] = {}
 
-# Bedrock LLM API details
-BEDROCK_API_URL = "https://bedrock.llm.in-west.swig.gy/chat/completions"
-BEDROCK_API_KEY = "sk-kVV4BbEyB4iK-Bb2Ngb7bw"
+BEDROCK_API_URL = "https://api.anthropic.com/v1/messages"
+
+
+# BEDROCK_API_KEY = "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"
 
 
 class ChatInput(BaseModel):
@@ -72,7 +74,6 @@ def get_or_create_memory(conversation_id: str) -> ConversationBufferMemory:
     """Retrieve or create a new memory buffer for a given conversation ID."""
     if conversation_id not in conversations:
         conversations[conversation_id] = ConversationBufferMemory(return_messages=True)
-    print(f"get_or_create_memory conversations: {conversations}")
     return conversations[conversation_id]
 
 
@@ -95,29 +96,36 @@ def format_messages_for_bedrock(messages: List) -> List[Dict[str, str]]:
 
 def query_bedrock_llm(messages: List[Dict[str, str]], personality: str = 'normal') -> str:
     """Query Bedrock LLM API with conversation history and personality."""
+
     headers = {
-        "Authorization": f"Bearer {BEDROCK_API_KEY}",
-        "Content-Type": "application/json"
+        "x-api-key": "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",
+        "Content-Type": "application/json",
+        "anthropic-version": "2023-06-01"
     }
 
-    system_message = "You are a concise assistant. Prioritize brevity and focus primarily on the most recent message."
+    system_message = "You are a concise assistant for Swiggy to help customers discover their next order. Be concise and focus primarily on the most recent message. Only respond for queries related to only food delivery. Politely decline discussing any other topic and try to veer the conversation towards food delivery"
     if personality == 'funny':
         system_message += " Your responses should be humorous and witty."
     else:
         system_message += " Maintain a professional and normal conversational tone."
 
     payload = {
-        "model": "bedrock-claude-3-5-sonnet",
-        "messages": [{"role": "system", "content": system_message}] + messages
+        "model": "claude-3-5-sonnet-20241022",
+        "max_tokens": 1024,
+        "system": system_message,
+        "messages": messages
     }
 
     try:
-        response = requests.post(BEDROCK_API_URL, headers=headers, json=payload)
+        print("payload:", payload)
+        response = requests.post(BEDROCK_API_URL, headers=headers, json=payload, verify=False)
         response.raise_for_status()
         result = response.json()
-        return result["choices"][0]["message"]["content"]
+        print(result)
+        # return result["choices"][0]["message"]["content"]
+        return result["content"][0]["text"]
     except requests.exceptions.RequestException as e:
-        return f"Error connecting to Bedrock API: {str(e)}"
+        return f"Error connecting to Bedrock API line 96: {str(e)}"
 
 
 def define_state(conversation_history: List[Dict[str, str]]) -> str:
@@ -127,30 +135,33 @@ def define_state(conversation_history: List[Dict[str, str]]) -> str:
     - "search" → If food recommendations should be made.
     - "non-search" → If the conversation is general.
     """
+
+    conversations = ". ".join([i['content'] for i in conversation_history])
+
     headers = {
-        "Authorization": f"Bearer {BEDROCK_API_KEY}",
-        "Content-Type": "application/json"
+        "x-api-key": "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",
+        "Content-Type": "application/json",
+        "anthropic-version": "2023-06-01"
     }
+
     payload = {
-        "model": "bedrock-claude-3-5-sonnet",
+        "model": "claude-3-5-sonnet-20241022",
+        "max_tokens": 1024,
+        "system": "You are a strict classifier. You must return ONLY 'search' or 'chatting'. No extra text. 'search' is the state when the user mentions some intent to order food",
         "messages": [
-            {"role": "system",
-             "content": "You are a strict classifier. You must return ONLY 'search' or 'chatting'. No extra text."},
             {"role": "user", "content": "Here is the chat history:\n" + str(
-                conversation_history) + "\n\nDetermine the state: ONLY return 'search' if food recommendations are needed, else return 'chatting'. Stress heavily on the most recent messagein the chat history"}
+                conversations) + "\n\nDetermine the state: ONLY return 'search' if food recommendations are needed, else return 'chatting'. Stress heavily on the most recent message in the chat history"}
         ]
     }
 
     try:
-        print(f"hitting BEDROCK_API_URL for headers: {headers}, payload: {payload}")
-        response = requests.post(BEDROCK_API_URL, headers=headers, json=payload)
-        print(f"BEDROCK_API_URL response: {response}")
+        print(payload, "line 119")
+        response = requests.post(BEDROCK_API_URL, headers=headers, json=payload, verify=False)
         response.raise_for_status()
-        result = response.json().get("choices", [{}])[0].get("message", {}).get("content", "").strip().lower()
-        print(result)
+        result = response.json().get("content", [{}])[0].get("text", {}).strip().lower()
+        print(result, "line 122")
         return "searching_food" if "search" in result else "chatting"
     except requests.exceptions.RequestException as e:
-        print(f"BEDROCK_API_URL error, response: {e}")
         return "chatting"
 
 
@@ -177,13 +188,15 @@ def get_food_keywords(description, veg_preference):
 
     print("User description:", description)
 
-    url = "https://bedrock.llm.in-west.swig.gy/chat/completions"
+    url = "https://api.anthropic.com/v1/messages"
     headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {BEDROCK_API_KEY}'
+        "x-api-key": "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",
+        "Content-Type": "application/json",
+        "anthropic-version": "2023-06-01"
     }
     data = {
-        "model": "bedrock-claude-3-5-sonnet",
+        "model": "claude-3-5-sonnet-20241022",
+        "max_tokens": 1024,
         "messages": [
             {
                 "role": "user",
@@ -205,12 +218,12 @@ def get_food_keywords(description, veg_preference):
         ]
     }
 
-    response = requests.post(url, headers=headers, json=data, timeout=120)
+    response = requests.post(url, headers=headers, json=data, verify=False)
     print("Bedrock LLM Response:", response.json())
 
     if response.status_code == 200:
         response_data = response.json()
-        content = response_data.get('choices', [{}])[0].get('message', {}).get('content', 'No content available')
+        content = response_data.get('content', [{}])[0].get('text', {})
 
         try:
             # Extract array from response content
@@ -240,21 +253,17 @@ def chat_endpoint(user_id_arg, message_arg, conversation_id_arg, personality_arg
     memory.chat_memory.add_user_message(message)
 
     conversation_history = memory.chat_memory.messages
-    print(f"conversation_history: {conversation_history}")
     formatted_history = format_messages_for_bedrock(conversation_history)
-    print(f"formatted_history: {formatted_history}")
 
     conversation_state = define_state(formatted_history)
 
     search_query = []
-    print(f"conversation_state: {conversation_state}")
     if conversation_state == "searching_food":
         search_query = get_food_keywords(message, "veg")
         return ChatResponse(conversation_id=conversation_id, response="", state=conversation_state,
                             search_query=search_query)
 
     response = query_bedrock_llm(formatted_history, personality=personality)
-    print(f"query_bedrock_llm response: {response}")
     memory.chat_memory.add_ai_message(response)
 
     return ChatResponse(conversation_id=conversation_id, response=response, state=conversation_state,

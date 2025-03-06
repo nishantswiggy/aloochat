@@ -22,7 +22,7 @@ PHONE_NUMBER = '+917503603082'
 
 recipient = "+919041047119"
 # update this token if you get token expiry issue
-ACCESS_TOKEN = "EAAh5gkR5E70BO2f1gKe6ZBO4LZBlcCu4nN6F8hfgGBOeDn6AUYysdffOTvufvKQqCi2J8Nt63KEs3Ili8DfpuTsWVlAyNwe5yog2PwAnRNTQBrMwQKoVuf2TQKUZAqFOj8IAbfu2kyl7ZCyylHR2zqhwB7FvLmDTCHKOvZBmq0HDBqWZBDrVd0Aay76yMt7ZB6vOsaSB3amWyuqSOh6FlWUk7HTnqCByGZCKTfHZAuNtlhwZDZD"
+ACCESS_TOKEN = "EAAh5gkR5E70BO61MDJ1ELwKTI9ZA5jWkjMhATiMPBNECSCUTJt72GPDtownZBUZBPNxY66wx8b4LIqtspKOflDpsCSEXbbjbtDRyBRG9y3YceQOxjQcZCYofwZCdoNV3c9sM6wNEB4VqFAisu21IOWBVGtP8ss42PFkV6YbOfpZAJICZAAjyVTdkz3sDJmyWrnd8hyrqaehndu2LNi3yNbmjNT8Gqrg52De6bRdoqpv"
 audio_url = "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp3"
 STATIC_VERIFY_TOKEN_CONST = "EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
 PHONE_NUMBER_ID = 601304399725157
@@ -89,7 +89,7 @@ def handle_text_message(message, to_number):
     text_body = message['text']['body']
     print(f"Received text message: {text_body}")
 
-    output, staticMsg = itemService.getWhatsappResponse("conversation", text_body)
+    output, staticMsg = itemService.getWhatsappResponse(to_number, "conversation", text_body)
 
     print(f"output text message: {output}")
     print(f"static text message: {staticMsg}")
@@ -188,6 +188,51 @@ def health_check():
         "message": "Hello World",
         "status": "success"
     })
+
+def send_media_message(to_number):
+
+        # Step 1: Upload the audio file to WhatsApp API
+        url = f'https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/media'
+        headers = {
+            'Authorization': f'Bearer {ACCESS_TOKEN}'
+        }
+
+        # Send the audio file to WhatsApp API
+        with open("amit.mp3", 'rb') as file:
+            files = {
+                'file': file,
+                'type': (None, "audio/mp3"),
+            }
+            print(f'Media file: {file}')
+            response = requests.post(url, headers=headers, files=files)
+
+        print(f'Media Response: {response}')
+        # Step 2: Check if media upload was successful
+        if response.status_code == 200:
+            media_data = response.json()
+            media_id = media_data['id']  # Extract the media ID from the response
+
+            # Step 3: Send the audio file to the recipient
+            message_url = f'https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/messages'
+            message_payload = {
+                "messaging_product": "whatsapp",
+                "to": to_number,
+                "type": "audio",
+                "audio": {
+                    "id": media_id
+                }
+            }
+
+            # Send the message with the uploaded audio
+            message_response = requests.post(message_url, headers=headers, json=message_payload)
+
+            # Handle message send response
+            if message_response.status_code == 200:
+                return jsonify({"status": "success", "message": "Audio sent successfully!"})
+            else:
+                return jsonify({"status": "error", "message": f"Failed to send audio: {message_response.status_code}, {message_response.text}"}), 400
+        else:
+            return jsonify({"status": "error", "message": f"Failed to upload audio: {response.status_code}, {response.text}"}), 400
 
 
 def handle_media_message(message, media_type, to_number):

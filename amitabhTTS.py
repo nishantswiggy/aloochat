@@ -12,7 +12,7 @@ def get_amitabh_audio(message: str) -> bytes:
         "model_id": "eleven_multilingual_v2"
     }
 
-    response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, json=payload, headers=headers,verify=False)
 
     if response.status_code != 200:
         raise Exception(f"Error: {response.status_code}, {response.text}")
