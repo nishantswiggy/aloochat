@@ -125,11 +125,15 @@ def webhook():
     data = request.json
     print("Received webhook data:", data)
 
-    # Loop through the messages and handle based on message type
     try:
-        messages = data['entry'][0]['changes'][0]['value']['messages']
+        messages = data['entry'][0]['changes'][0]['value'].get('messages', [])
 
         for message in messages:
+            # ✅ Ignore messages categorized as "utility"
+            if message.get("context", {}).get("category") == "utility":
+                print("Ignoring utility message.")
+                continue  # Skip processing this message
+
             message_type = message['type']
             from_number = message['from']
 
@@ -149,6 +153,7 @@ def webhook():
                 print(f"Unsupported message type: {message_type}")
 
         return jsonify({"status": "success"}), 200
+
     except Exception as e:
         print(f"Error processing message: {e}")
         return jsonify({"status": "failure", "error": str(e)}), 400
