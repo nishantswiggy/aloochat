@@ -209,7 +209,7 @@ def send_media_message(to_number, media_type, media_url, mime_type):
         "messaging_product": "whatsapp",
         "type": media_type,
         media_type: {
-            "url": media_url,
+            "link": media_url,
             "mime_type": mime_type
         }
     }
