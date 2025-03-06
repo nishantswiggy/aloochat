@@ -41,7 +41,7 @@ def call_ds(message, conversation_id):
     response = chat_endpoint(post_request_body["user_id"], post_request_body["message"],
                              post_request_body["conversation_id"], post_request_body["personality"])
     print(f"call_ds response: {response}")
-    return json.loads(response.text)
+    return response.response
 
 
 app = FastAPI(title="Bedrock LLM Chatbot with Memory & Intelligent State")

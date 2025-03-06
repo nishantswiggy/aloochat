@@ -10,6 +10,7 @@ def getWhatsappResponse(conversation, message):
     items_json = {}
     if "search_query" in ds_response and len(ds_response["search_query"]) > 0:
         items_json = get_item.get_items(ds_response["search_query"][0])
-        tranformItemData.convert_json(items_json)
+        output = tranformItemData.convert_json(items_json)
+        return output, ""
     print(items_json)
-    return items_json
+    return items_json, ds_response
