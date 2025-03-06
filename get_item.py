@@ -2,7 +2,7 @@ import requests
 import json
 import re
 
-def get_items(search_query):
+def get_items(search_query :str):
     # Headers
     headers = {
         "Host": "disc.swiggy.com",

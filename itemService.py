@@ -13,11 +13,10 @@ def getWhatsappResponse(to_number, conversation, message):
     print(f"getWhatsappResponse ds_response: {ds_response}")
     items_json = {}
     print("search_query" in ds_response)
-    print(len(ds_response["search_query"]))
-    if "search_query" in ds_response and len(ds_response["search_query"]) > 0:
-        print(f"Inside search query: {ds_response['search_query']}:")
-        items_json = get_item.get_items(ds_response["search_query"][0])
+    print(len(ds_response.search_query))
+    if len(ds_response.search_query) > 0:
+        print(f"Inside search query: {ds_response.search_query}:")
+        items_json = get_item.get_items(ds_response.search_query[0])
         output = tranformItemData.convert_json(items_json)
-        print(output is {output})
         return output, ""
     return items_json, ds_response.response
