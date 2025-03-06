@@ -22,7 +22,7 @@ PHONE_NUMBER = '+917503603082'
 
 recipient = "+919041047119"
 # update this token if you get token expiry issue
-ACCESS_TOKEN = "EAAP3nUnNbEkBO3fCGYCqWPZCEngoRpvcBQdCa1tIApZBXVQPssQ8QbccPZANJZBStUSKiwWxJwk2lzsnXjxXc4NwFYrliWunwfWnZANSwp0NrviPAfwyrofe5XPxPU48QKtPrLFKLmMr9G3L5zfXQL5WA7rxxGZB3ZCbNd513sCuiZCJ7o7anlN2ROfZAO2u0XKsiFUkXPt1fkRAqVNF1Jzcn0jLEZBcZBxF5aomEQHbzKn"
+ACCESS_TOKEN = "EAAh5gkR5E70BO2f1gKe6ZBO4LZBlcCu4nN6F8hfgGBOeDn6AUYysdffOTvufvKQqCi2J8Nt63KEs3Ili8DfpuTsWVlAyNwe5yog2PwAnRNTQBrMwQKoVuf2TQKUZAqFOj8IAbfu2kyl7ZCyylHR2zqhwB7FvLmDTCHKOvZBmq0HDBqWZBDrVd0Aay76yMt7ZB6vOsaSB3amWyuqSOh6FlWUk7HTnqCByGZCKTfHZAuNtlhwZDZD"
 audio_url = "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp3"
 STATIC_VERIFY_TOKEN_CONST = "EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
 PHONE_NUMBER_ID = 601304399725157
@@ -89,14 +89,17 @@ def handle_text_message(message, to_number):
     text_body = message['text']['body']
     print(f"Received text message: {text_body}")
 
-    output = itemService.getWhatsappResponse("conversation", text_body)
-    # output = text_body
+    output, staticMsg = itemService.getWhatsappResponse("conversation", text_body)
 
     print(f"output text message: {output}")
+    print(f"static text message: {staticMsg}")
+
+    if staticMsg != "":
+        send_text_message(to_number, staticMsg)
+        return
 
     # Respond with the same text
-    send_text_message(to_number, output)
-
+    send_interactive_text_message(to_number, output)
 
 def handle_location_message(message, to_number):
     """Function to handle incoming location messages and send a location response"""
@@ -107,6 +110,30 @@ def handle_location_message(message, to_number):
     # Respond with the same location
     send_location_message(to_number, latitude, longitude)
 
+
+def send_interactive_text_message(to_number, text_body):
+    """Send a text message back to the user"""
+    response_data = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to_number,
+        "type": "interactive",
+        "interactive": {
+            "type": "list",
+            "header": {
+                "type": "text",
+                "text": "Select your Restaurant"
+            },
+            "body": {
+                "text": "Which restaurant option do you prefer?"
+            },
+            "footer": {
+                "text": "Lucky Shrub: Your gateway to succulents™"
+            },
+            "action": text_body
+        }
+    }
+    send_message(response_data)
 
 def send_text_message(to_number, text_body):
     """Send a text message back to the user"""
