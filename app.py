@@ -85,7 +85,10 @@ def handle_text_message(message, to_number):
     text_body = message['text']['body']
     print(f"Received text message: {text_body}")
 
-    output = itemService.getWhatsappResponse("conversation", text_body)
+    # output = itemService.getWhatsappResponse("conversation", text_body)
+    output = text_body
+
+    print(f"output text message: {output}")
 
     # Respond with the same text
     send_text_message(to_number, output)

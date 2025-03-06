@@ -22,5 +22,7 @@ def call_ds(message,conversation_id):
     # API URL
     TARGET_SERVICE_HOST_NAME = "http://localhost:8000/chat"
     # Make API Call
+    print(f"call_ds post_request_body: {post_request_body}")
     response = requests.post(TARGET_SERVICE_HOST_NAME, headers=headers, json=post_request_body)
+    print(f"call_ds response: {response}")
     return json.loads(response.text)
