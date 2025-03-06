@@ -188,7 +188,11 @@ def send_text_message(to_number, text_body):
     response_data = {
         "messaging_product": "whatsapp",
         "to": to_number,
-        "type": "template", "template": { "name": "hello_world", "language": { "code": "en_US" }}}
+        "type": "text",
+        "text": {
+            "body": text_body
+        }
+    }
     send_message(response_data)
 
 
