@@ -21,8 +21,9 @@ recipient = "+919041047119"
 # update this token if you get token expiry issue
 ACCESS_TOKEN = "EAAP3nUnNbEkBO3fCGYCqWPZCEngoRpvcBQdCa1tIApZBXVQPssQ8QbccPZANJZBStUSKiwWxJwk2lzsnXjxXc4NwFYrliWunwfWnZANSwp0NrviPAfwyrofe5XPxPU48QKtPrLFKLmMr9G3L5zfXQL5WA7rxxGZB3ZCbNd513sCuiZCJ7o7anlN2ROfZAO2u0XKsiFUkXPt1fkRAqVNF1Jzcn0jLEZBcZBxF5aomEQHbzKn"
 audio_url = "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp3"
-STATIC_VERIFY_TOKEN_CONST="EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
-PHONE_NUMBER_ID=601304399725157
+STATIC_VERIFY_TOKEN_CONST = "EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
+PHONE_NUMBER_ID = 601304399725157
+
 
 @app.route('/webhook', methods=['GET'])
 def verify_webhook():
@@ -85,13 +86,14 @@ def handle_text_message(message, to_number):
     text_body = message['text']['body']
     print(f"Received text message: {text_body}")
 
-    # output = itemService.getWhatsappResponse("conversation", text_body)
-    output = text_body
+    output = itemService.getWhatsappResponse("conversation", text_body)
+    # output = text_body
 
     print(f"output text message: {output}")
 
     # Respond with the same text
     send_text_message(to_number, output)
+
 
 def handle_location_message(message, to_number):
     """Function to handle incoming location messages and send a location response"""
@@ -114,6 +116,7 @@ def send_text_message(to_number, text_body):
         }
     }
     send_message(response_data)
+
 
 def send_location_message(to_number, latitude, longitude):
     """Send a location message back to the user"""
@@ -148,12 +151,14 @@ def send_message(response_data):
     else:
         print(f"Failed to send message. Status code: {response.status_code}, Error: {response.text}")
 
-@app.route('/health-check',methods=['GET'])
+
+@app.route('/health-check', methods=['GET'])
 def health_check():
     return jsonify({
         "message": "Hello World",
         "status": "success"
     })
+
 
 def handle_media_message(message, media_type, to_number):
     media_id = message[media_type]['id']
@@ -167,6 +172,7 @@ def handle_media_message(message, media_type, to_number):
 
     handle_received_media(media_id, media_type, mime_type, to_number, ACCESS_TOKEN, PHONE_NUMBER_ID)
 
+
 def get_media_url(media_id):
     url = f'https://graph.facebook.com/v22.0/{media_id}?fields=url'
     headers = {'Authorization': f'Bearer {ACCESS_TOKEN}'}
@@ -179,8 +185,8 @@ def get_media_url(media_id):
         print(f"Failed to get media URL: {response.status_code}, {response.text}")
         return None
 
-def handle_received_media(media_id, media_type, mime_type, to_number, token, phone_number_id):
 
+def handle_received_media(media_id, media_type, mime_type, to_number, token, phone_number_id):
     # Step 1: Get Media URL from WhatsApp
     media_url = get_media_url(media_id)
     if not media_url:
@@ -237,4 +243,3 @@ def handle_received_media(media_id, media_type, mime_type, to_number, token, pho
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
