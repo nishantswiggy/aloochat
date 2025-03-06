@@ -102,7 +102,7 @@ ACCESS_TOKEN = "EAAh5gkR5E70BOxfEgkYZAxztMzjxLO0bkeZC2ZA863r5bpa3gC89iZAoZAoCXWW
 audio_url = "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp3"
 VERIFY_TOKEN="EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
 
-@app.route('/webhooks', methods=['GET'])
+@app.route('/webhook', methods=['GET'])
 def verify_webhook():
     """Handles the webhook verification request from WhatsApp"""
     # Get the 'hub.mode', 'hub.challenge', and 'hub.verify_token' from the query parameters
