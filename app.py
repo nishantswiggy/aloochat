@@ -5,7 +5,10 @@ from flask import Flask, jsonify, request
 import json
 import requests
 
+import get_item
 import itemService
+import tranformItemData
+from image_to_keyword import analyze_image
 
 # conf.get_default().verify_ssl = False
 # Add this line before connecting
@@ -167,10 +170,12 @@ def handle_media_message(message, media_type, to_number):
     if not original_media_url:
         print("Failed to retrieve media URL")
         return
-
+    search_query, reason = analyze_image(original_media_url, "sk-kVV4BbEyB4iK-Bb2Ngb7bw")
+    items_json = get_item.get_items(search_query)
+    output = tranformItemData.convert_json(items_json)
     print(f"Received {media_type}: {media_id}, MIME: {mime_type}, Original URL: {original_media_url}")
 
-    handle_received_media(media_id, media_type, mime_type, to_number, ACCESS_TOKEN, PHONE_NUMBER_ID)
+    send_text_message(to_number, output)
 
 
 def get_media_url(media_id):
