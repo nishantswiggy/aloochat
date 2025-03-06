@@ -165,13 +165,13 @@ def handle_text_message(message, to_number):
 
 def handle_media_message(message, media_type, to_number):
     """Function to handle media messages and send a media response"""
-    media_url = message[media_type]['url']
     media_id = message[media_type]['id']
     mime_type = message[media_type]['mime_type']
-    print(f"Received {media_type} message: {media_url}, MIME Type: {mime_type}")
+    image_url = get_media_url(media_id)
+    print(f"Received {media_type} message: {image_url}, MIME Type: {mime_type}")
 
     # Respond with the same media (re-use the media URL)
-    send_media_message(to_number, media_type, media_url, mime_type)
+    send_media_message(to_number, media_type, image_url, mime_type)
 
 
 def handle_location_message(message, to_number):
@@ -254,6 +254,23 @@ def health_check():
         "message": "Hello World",
         "status": "success"
     })
+
+
+# Function to retrieve the media URL using media_id
+def get_media_url(media_id):
+    url = f'https://graph.facebook.com/v22.0/601304399725157/media/{media_id}'
+    headers = {
+        'Authorization': f'Bearer {ACCESS_TOKEN}'
+    }
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        media_data = response.json()
+        return media_data.get('url')
+    else:
+        print(f"Failed to get media URL: {response.status_code}, {response.text}")
+        return None
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
