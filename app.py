@@ -8,83 +8,83 @@ import requests
 # Add this line before connecting
 # ngrok.set_auth_token("2twNTpr5zG3U0ckMbzhUwg0acHA_388Ufsb8ZR56f38NyUsS3")
 
-class AudioMessage:
-    def __init__(self, to, audio_url):
-        self.messaging_product = "whatsapp"
-        self.to = to
-        self.type = "audio"
-        self.audio = {"link": audio_url}
-
-    def to_json(self):
-        return {
-            "messaging_product": self.messaging_product,
-            "to": self.to,
-            "type": self.type,
-            "audio": self.audio
-        }
-
-
-class ImageMessage:
-    def __init__(self, to, image_url):
-        self.messaging_product = "whatsapp"
-        self.to = to
-        self.type = "image"
-        self.image = {
-            "link": image_url,
-            "caption": "Image sent via WhatsApp API"  # Optional caption
-        }
-
-    def to_json(self):
-        return {
-            "messaging_product": self.messaging_product,
-            "to": self.to,
-            "type": self.type,
-            "image": self.image
-        }
-
-def send_whatsapp_image(to: str, token: str, image_url: str):
-    url = "https://graph.facebook.com/v22.0/601304399725157/messages"
-
-    # Create message payload
-    message = ImageMessage(to, image_url)
-
-    # Set headers
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {token}"
-    }
-
-    # Send request
-    response = requests.post(
-        url,
-        headers=headers,
-        json=message.to_json()
-    )
-
-    print("Response Status:", response.status_code)
-    return response
-
-def send_whatsapp_audio(to: str, token: str, audio_url: str):
-    url = "https://graph.facebook.com/v22.0/601304399725157/messages"
-
-    # Create message payload
-    message = AudioMessage(to, audio_url)
-
-    # Set headers
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {token}"
-    }
-
-    # Send request
-    response = requests.post(
-        url,
-        headers=headers,
-        json=message.to_json()
-    )
-
-    print("Response Status:", response.status_code)
-    return response
+# class AudioMessage:
+#     def __init__(self, to, audio_url):
+#         self.messaging_product = "whatsapp"
+#         self.to = to
+#         self.type = "audio"
+#         self.audio = {"link": audio_url}
+#
+#     def to_json(self):
+#         return {
+#             "messaging_product": self.messaging_product,
+#             "to": self.to,
+#             "type": self.type,
+#             "audio": self.audio
+#         }
+#
+#
+# class ImageMessage:
+#     def __init__(self, to, image_url):
+#         self.messaging_product = "whatsapp"
+#         self.to = to
+#         self.type = "image"
+#         self.image = {
+#             "link": image_url,
+#             "caption": "Image sent via WhatsApp API"  # Optional caption
+#         }
+#
+#     def to_json(self):
+#         return {
+#             "messaging_product": self.messaging_product,
+#             "to": self.to,
+#             "type": self.type,
+#             "image": self.image
+#         }
+#
+# def send_whatsapp_image(to: str, token: str, image_url: str):
+#     url = "https://graph.facebook.com/v22.0/601304399725157/messages"
+#
+#     # Create message payload
+#     message = ImageMessage(to, image_url)
+#
+#     # Set headers
+#     headers = {
+#         "Content-Type": "application/json",
+#         "Authorization": f"Bearer {token}"
+#     }
+#
+#     # Send request
+#     response = requests.post(
+#         url,
+#         headers=headers,
+#         json=message.to_json()
+#     )
+#
+#     print("Response Status:", response.status_code)
+#     return response
+#
+# def send_whatsapp_audio(to: str, token: str, audio_url: str):
+#     url = "https://graph.facebook.com/v22.0/601304399725157/messages"
+#
+#     # Create message payload
+#     message = AudioMessage(to, audio_url)
+#
+#     # Set headers
+#     headers = {
+#         "Content-Type": "application/json",
+#         "Authorization": f"Bearer {token}"
+#     }
+#
+#     # Send request
+#     response = requests.post(
+#         url,
+#         headers=headers,
+#         json=message.to_json()
+#     )
+#
+#     print("Response Status:", response.status_code)
+#     return response
 app = Flask(__name__)
 
 # @app.route('/', methods=['GET'])
@@ -98,7 +98,7 @@ WHATSAPP_API_URL = 'https://graph.facebook.com/v22.0/601304399725157/messages'
 PHONE_NUMBER = '+917503603082'
 
 recipient = "+919041047119"
-ACCESS_TOKEN = "EAAh5gkR5E70BO1A8A8G2HYLpIZC9WgD6PcKnFUvkT1fOpgNdOGEgAEM1hClgFMUvX4Wqe02MaZCnLV6RlbI9I5c9gWd1wdmb1pevZBcz7dUQ3ecHmhYZCRXxO8tKeOOQLcaBFdrZCOGyRMK1cZA19jl48ORz5eXbbvQVDIjWgokGCiNBfjid4H7uamezMtDK4cdUty8gB3es7ciZB1cDBlCFZB5cFZAOFNNCCsFj5ZBBhNzwZDZD"
+ACCESS_TOKEN = "EAAh5gkR5E70BOxfEgkYZAxztMzjxLO0bkeZC2ZA863r5bpa3gC89iZAoZAoCXWWL9NGrudoNGPEvEmIgIieom4aN2xMHHowuKE8gQxBBwiZBPRE6iVbgdACYi46xZAz7uE7RApxPTaFYxujPuNVIOpNmECtbzNyPJT6nQmXDqmP1db4xstZA2JhZB8RWTOWfBWGQRsXMPLDTkyZAgIeFZAYOsVGYCJ2RtcLW7Ct4LQmJnDX"
 audio_url = "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp3"
 VERIFY_TOKEN="EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
 
@@ -186,16 +186,9 @@ def handle_location_message(message, to_number):
 def send_text_message(to_number, text_body):
     """Send a text message back to the user"""
     response_data = {
+        "messaging_product": "whatsapp",
         "to": to_number,
-        "messages": [
-            {
-                "type": "text",
-                "text": {
-                    "body": text_body
-                }
-            }
-        ]
-    }
+        "type": "template", "template": { "name": "hello_world", "language": { "code": "en_US" }}}
     send_message(response_data)
 
 
@@ -203,6 +196,7 @@ def send_media_message(to_number, media_type, media_url, mime_type):
     """Send a media message (image, video, etc.) back to the user"""
     response_data = {
         "to": to_number,
+        "messaging_product": "whatsapp",
         "messages": [
             {
                 "type": media_type,
@@ -220,6 +214,7 @@ def send_location_message(to_number, latitude, longitude):
     """Send a location message back to the user"""
     response_data = {
         "to": to_number,
+        "messaging_product": "whatsapp",
         "messages": [
             {
                 "type": "location",
