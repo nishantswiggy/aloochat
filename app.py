@@ -1,4 +1,6 @@
-from flask import Flask, jsonify
+import os
+
+from flask import Flask, jsonify, request
 # from pyngrok import ngrok, conf
 import json
 import requests
@@ -39,7 +41,6 @@ class ImageMessage:
             "type": self.type,
             "image": self.image
         }
-
 
 def send_whatsapp_image(to: str, token: str, image_url: str):
     url = "https://graph.facebook.com/v22.0/601304399725157/messages"
@@ -93,54 +94,161 @@ app = Flask(__name__)
 #         "status": "success"
 #     })
 # Replace with your third-party provider's API credentials
-API_URL = 'https://your-whatsapp-api-endpoint.com/send_message'
-API_KEY = 'your-api-key'
-PHONE_NUMBER = 'your-phone-number'
+WHATSAPP_API_URL = 'https://graph.facebook.com/v22.0/601304399725157/messages'
+PHONE_NUMBER = '+917503603082'
 
 recipient = "+919041047119"
-access_token = "EAAP3nUnNbEkBO8o5NZCRoBoY4DYVFnFbSJoeQyyliIeWoJF0u25ij5JlPIa5sqnLlPAgVkAujzK9gSa4gU22ZCeZB28is6ZArXWMqNR4EHaVy30EeZAXrNvOEcP3HKVSFTjEpbsM6zjSqZAMBW3w1sZCJeyH1XzSIOin1ccXEZCS3RwBZBT7IDk2mbEinDBkj05wSZAwZCbrBPodcpDuAup70Im8Ta165wUuggTHry8ZB1eF"
+ACCESS_TOKEN = "EAAh5gkR5E70BO1A8A8G2HYLpIZC9WgD6PcKnFUvkT1fOpgNdOGEgAEM1hClgFMUvX4Wqe02MaZCnLV6RlbI9I5c9gWd1wdmb1pevZBcz7dUQ3ecHmhYZCRXxO8tKeOOQLcaBFdrZCOGyRMK1cZA19jl48ORz5eXbbvQVDIjWgokGCiNBfjid4H7uamezMtDK4cdUty8gB3es7ciZB1cDBlCFZB5cFZAOFNNCCsFj5ZBBhNzwZDZD"
 audio_url = "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp3"
-
-
+VERIFY_TOKEN="EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
 
 @app.route('/', methods=['GET'])
-def hello_world():
-    print(send_whatsapp_image(recipient, access_token, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXRwezuhFdnNG_jsRgGo7oklndpWxkft2r9Q&s'))
-    # print(send_whatsapp_audio(recipient, access_token, audio_url))
-    return jsonify({
-        "message": "Hello World",
-        "status": "success"
-    })
-#
-# @app.route('/webhook', methods=['POST'])
-# def webhook():
-#     """This is the webhook endpoint that WhatsApp messages will hit."""
-#     incoming_msg = request.json.get('message', '').strip()  # Assuming a JSON payload
-#
-#     # Send a response based on the incoming message
-#     if incoming_msg.lower() == 'hello':
-#         response_msg = "Hi there! How can I help you today?"
-#     elif incoming_msg.lower() == 'bye':
-#         response_msg = "Goodbye! Have a great day."
-#     else:
-#         response_msg = f"Sorry, I don't understand: {incoming_msg}"
-#
-#     # Prepare the message payload to send back to WhatsApp
-#     payload = {
-#         'to': PHONE_NUMBER,  # The recipient's phone number
-#         'message': response_msg,  # The message to send
-#         'api_key': API_KEY  # Your API key for authentication
-#     }
-#
-#     # Make an API call to the WhatsApp provider's API to send the message
-#     response = requests.post(API_URL, json=payload)
-#
-#     if response.status_code == 200:
-#         return jsonify({"status": "success"}), 200
-#     else:
-#         return jsonify({"status": "error", "message": response.text}), 400
+def verify_webhook():
+    """Handles the webhook verification request from WhatsApp"""
+    # Get the 'hub.mode', 'hub.challenge', and 'hub.verify_token' from the query parameters
+    mode = request.args.get('hub.mode')
+    challenge = request.args.get('hub.challenge')
+    token = request.args.get('hub.verify_token')
+
+    # Check if the verify token matches
+    if token == VERIFY_TOKEN:
+        # If the token is valid, return the challenge to complete the verification
+        return str(challenge), 200
+    else:
+        # If the token doesn't match, return an error response
+        return 'Verification failed', 403
+
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    data = request.json
+    print("Received webhook data:", data)
+
+    # Loop through the messages and handle based on message type
+    try:
+        messages = data['entry'][0]['changes'][0]['value']['messages']
+
+        for message in messages:
+            message_type = message['type']
+            from_number = message['from']
+
+            if message_type == 'text':
+                handle_text_message(message, from_number)
+            elif message_type == 'image':
+                handle_media_message(message, 'image', from_number)
+            elif message_type == 'video':
+                handle_media_message(message, 'video', from_number)
+            elif message_type == 'audio':
+                handle_media_message(message, 'audio', from_number)
+            elif message_type == 'document':
+                handle_media_message(message, 'document', from_number)
+            elif message_type == 'location':
+                handle_location_message(message, from_number)
+            else:
+                print(f"Unsupported message type: {message_type}")
+
+        return jsonify({"status": "success"}), 200
+    except Exception as e:
+        print(f"Error processing message: {e}")
+        return jsonify({"status": "failure", "error": str(e)}), 400
+
+
+def handle_text_message(message, to_number):
+    """Function to handle incoming text messages and send a text response"""
+    text_body = message['text']['body']
+    print(f"Received text message: {text_body}")
+
+    # Respond with the same text
+    send_text_message(to_number, text_body)
+
+
+def handle_media_message(message, media_type, to_number):
+    """Function to handle media messages and send a media response"""
+    media_url = message[media_type]['url']
+    media_id = message[media_type]['id']
+    mime_type = message[media_type]['mime_type']
+    print(f"Received {media_type} message: {media_url}, MIME Type: {mime_type}")
+
+    # Respond with the same media (re-use the media URL)
+    send_media_message(to_number, media_type, media_url, mime_type)
+
+
+def handle_location_message(message, to_number):
+    """Function to handle incoming location messages and send a location response"""
+    latitude = message['location']['latitude']
+    longitude = message['location']['longitude']
+    print(f"Received location: Latitude={latitude}, Longitude={longitude}")
+
+    # Respond with the same location
+    send_location_message(to_number, latitude, longitude)
+
+
+def send_text_message(to_number, text_body):
+    """Send a text message back to the user"""
+    response_data = {
+        "to": to_number,
+        "messages": [
+            {
+                "type": "text",
+                "text": {
+                    "body": text_body
+                }
+            }
+        ]
+    }
+    send_message(response_data)
+
+
+def send_media_message(to_number, media_type, media_url, mime_type):
+    """Send a media message (image, video, etc.) back to the user"""
+    response_data = {
+        "to": to_number,
+        "messages": [
+            {
+                "type": media_type,
+                media_type: {
+                    "url": media_url,
+                    "mime_type": mime_type
+                }
+            }
+        ]
+    }
+    send_message(response_data)
+
+
+def send_location_message(to_number, latitude, longitude):
+    """Send a location message back to the user"""
+    response_data = {
+        "to": to_number,
+        "messages": [
+            {
+                "type": "location",
+                "location": {
+                    "latitude": latitude,
+                    "longitude": longitude
+                }
+            }
+        ]
+    }
+    send_message(response_data)
+
+
+def send_message(response_data):
+    """Send the response message via WhatsApp Business API"""
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    # Send the response to WhatsApp API
+    response = requests.post(WHATSAPP_API_URL, json=response_data, headers=headers)
+
+    if response.status_code == 200:
+        print("Message sent successfully")
+    else:
+        print(f"Failed to send message. Status code: {response.status_code}, Error: {response.text}")
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=5151)
 
