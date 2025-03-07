@@ -23,7 +23,7 @@ def convert_json(data):
             # Add each item as a row in the restaurant's section
             row = {
                 "id": item["id"],
-                "description": str(random.randint(15, 25))  + " mins",
+                "description": "SLA " + str(random.randint(15, 25)) + " mins \U0001F680" +"|"+ "₹" + str(item["price"])+" | "+item["rating"],
                 "title": item["name"][:21] + "..." if len(item["name"]) > 21 else item["name"],
             }
             section["rows"].append(row)
