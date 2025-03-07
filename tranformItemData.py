@@ -14,7 +14,7 @@ def convert_json(data):
     for restaurant_id, restaurant_info in data.items():
         # Create a section for each restaurant
         section = {
-            "title": restaurant_info["restaurant_name"][:23],  # Use restaurant name as title
+            "title": restaurant_info["restaurant_name"][:21],  # Use restaurant name as title
             "rows": []  # Initialize rows for this restaurant
         }
 
