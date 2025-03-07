@@ -1,10 +1,12 @@
 import random
 def convert_json(data):
+    print("data", data)
     # Initialize the result with a button and empty sections
     result = {
         "button": "Item options",
         "sections": []
     }
+    print("data", data)
 
     # Loop through each restaurant in the input data
     for restaurant_id, restaurant_info in data.items():
@@ -27,4 +29,5 @@ def convert_json(data):
         # Add the section to the sections list
         result["sections"].append(section)
 
-    return result
+    print("type(result)", type(result))
+    return json.dumps(result)
