@@ -314,6 +314,9 @@ def handle_media_message(message, media_type, to_number):
     print(f"search_query: {search_query}, reason: {reason}")
     if len(search_query) == 0:
         print("No results found.")
+        amitabhTTS.get_amitabh_audio(
+            ChatResponse(conversation_id='123', response='Shama kijie isme hum apki koi sahayta nahi kr skte', state=''))
+        send_media_message(to_number)
         send_text_message(to_number, "Try a different image")
         return
 
