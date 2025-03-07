@@ -71,6 +71,7 @@ def get_items(search_query :str):
                 if "imageId" in dish["info"] and "id" in dish["info"] and "name" in dish["info"] :
                     if len(restaurant_dishes[restaurant_id]["items"]) > 2:
                         break
+                    rating = '0'
                     if "ratings" in dish["info"] and "aggregatedRating" in dish["info"]["ratings"] and "rating" in dish["info"]["ratings"]["aggregatedRating"]:
                         rating = dish["info"]["ratings"]["aggregatedRating"]["rating"]
                     dish_obj = {
