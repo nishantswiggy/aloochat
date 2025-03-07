@@ -407,7 +407,7 @@ def send_static_whatsapp_image(recipient_number, caption):
         "to": recipient_number,  # Recipient's phone number in international format
         "type": "image",
         "image": {
-            "link": "https://i0.wp.com/www.cutecrafting.com/wp-content/uploads/2017/08/ThankYouOrderFrog.png",
+            "link": "https://media-assets.swiggy.com/swiggy/image/upload/COLLECTIONS/IMAGES/MERCH/2025/3/7/bd18868f-5339-4e4b-bdaf-0f39d13702b0_20250307_1038_Swift Delivery Animation_simple_compose_01jnqg2pnfeyy8aryr3vedh8b4.gif",
             "caption": "Swiggy!"
         }
     }
