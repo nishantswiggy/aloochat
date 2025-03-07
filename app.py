@@ -96,13 +96,14 @@ def handle_final_confirmation_message(message, to_number):
         custom_str = f"Thank you, your order has been placed."
         send_text_message(to_number, custom_str)
         send_static_whatsapp_image(to_number, custom_str)
+        itemService.ConversationID = ""
 
 def handle_text_message(message, to_number):
     """Function to handle incoming text messages and send a text response"""
     text_body = message['text']['body']
     print(f"Received text message: {text_body}")
 
-    output, staticMsg = itemService.getWhatsappResponse(to_number, "conversation", text_body)
+    output, staticMsg = itemService.getWhatsappResponse(to_number, text_body)
 
     print(f"output text message: {output}")
     print(f"static text message: {staticMsg}")
