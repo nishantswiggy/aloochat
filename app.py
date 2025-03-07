@@ -322,8 +322,8 @@ def handle_media_message(message, media_type, to_number):
     output = convert_json(items_json)
     print(f"Received {media_type}: {media_id}, MIME: {mime_type}, Original URL: {original_media_url}, output:{output}")
     print("type(output)", type(output))
-
-    send_text_message(to_number, output)
+    send_interactive_text_message(to_number, output)
+    # send_text_message(to_number, output)
 
 
 def get_media_url(media_id):
