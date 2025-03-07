@@ -25,7 +25,7 @@ PHONE_NUMBER = '+917503603082'
 
 recipient = "+919041047119"
 # update this token if you get token expiry issue
-ACCESS_TOKEN = "EAAP3nUnNbEkBO11zKKaO4RVOzwpcWRLxVVY6yQHd1VIKn7zzftFZB8uRkUkn5NUXes6b6e5weqJuPxsEtJZBv3rpOvEAAy3O25aZCPJlImZCGKwJwgpabSmlIOMQJD2Ep5LScgZARexUqdrFuZBg0lwKb5vtRVW1nsbZByBWaQBYwkZCBaxr49ZA4PzRJBJfHSzpyGNQZAskyk44ZAzDqZA8z6z0sgIL3qHyeZCZALu3agx0IFsAZDZD"
+ACCESS_TOKEN = "EAAh5gkR5E70BO0UXay4xm4CEYms4xSpL3UJgTTIlUN7E4yf1yH0clZC6PdZBoBiBStYZB4Mu2zeG88duMEACo6hEZAB9nLHHCe7JffcB1mV0FZAnLxUxorc1rZBCqMoZA5ebYaROeBDUZBbwPY0OpLaFPKTlzFVo1Y5aJgUOgVinWhKQYNFlIgrE4Fajy8b1zA44rrRYwYBr3K6qUMlHhaOE71Rq2E6LEpxLm0NaJkvW"
 audio_url = "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp3"
 STATIC_VERIFY_TOKEN_CONST = "EAAh5gkR5E70BOZBUYBiVYeyOICETbTqs87ZCRWoVotc6VZA4ebZBJYgrhRoF8h9Ghq43MErZCLPl1toZCWLv4Nkq85Yb8n7zwZBH8IAlEbFkcONDZBZB8DYkiWA4s55bfiMMxo9ifnnEbOSZBP53StGQw4IJPOR7Fn6RrH9yb0bOt262cf2ZAmp1vnsF6b88noKf6tU5Wh7IFmPoTlSoV6dVTMIhJVyYdUZCyKhbgExPHQH1S2P6"
 PHONE_NUMBER_ID = 601304399725157
@@ -110,6 +110,8 @@ def webhook():
                 handle_media_message(message, 'document', from_number)
             elif message_type == 'location':
                 handle_location_message(message, from_number)
+            elif message_type == 'interactive':
+                handle_final_confirmation_message(message, from_number)
             else:
                 print(f"Unsupported message type: {message_type}")
 
@@ -119,13 +121,25 @@ def webhook():
         print(f"Error processing message: {e}")
         return jsonify({"status": "failure", "error": str(e)}), 400
 
+def handle_final_confirmation_message(message, to_number):
+    print(f"Here inside the function handle_final_confirmation_message: {message}")
+    """Function to handle incoming text messages and send a text response"""
+    if message.get("type") == "interactive" and "list_reply" in message.get("interactive", {}):
+        list_reply = message["interactive"]["list_reply"]
+        list_reply_id = list_reply.get("id", "N/A")
+        list_reply_title = list_reply.get("title", "No title")
+        list_reply_description = list_reply.get("description", "No description")
+        custom_str = f"Thank you, your order has been placed."
+        send_text_message(to_number, custom_str)
+        send_static_whatsapp_image(to_number, custom_str)
+        itemService.ConversationID = ""
 
 def handle_text_message(message, to_number):
     """Function to handle incoming text messages and send a text response"""
     text_body = message['text']['body']
     print(f"Received text message: {text_body}")
 
-    output, staticMsg = itemService.getWhatsappResponse(to_number, "conversation", text_body)
+    output, staticMsg = itemService.getWhatsappResponse(to_number, text_body)
 
     print(f"output text message: {output}")
     print(f"static text message: {staticMsg}")
@@ -376,6 +390,26 @@ def get_media_url(media_id):
 #     else:
 #         print(f"Failed to send message: {send_response.status_code}, {send_response.text}")
 
+def send_static_whatsapp_image(recipient_number, caption):
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {ACCESS_TOKEN}"
+    }
+
+    data = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": recipient_number,  # Recipient's phone number in international format
+        "type": "image",
+        "image": {
+            "link": "https://i0.wp.com/www.cutecrafting.com/wp-content/uploads/2017/08/ThankYouOrderFrog.png",
+            "caption": "Swiggy!"
+        }
+    }
+
+    response = requests.post(WHATSAPP_API_URL, headers=headers, json=data, verify=False)
+    return response.json()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
