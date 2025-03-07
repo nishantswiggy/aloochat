@@ -71,8 +71,12 @@ def get_items(search_query :str):
                 if "imageId" in dish["info"] and "id" in dish["info"] and "name" in dish["info"] :
                     if len(restaurant_dishes[restaurant_id]["items"]) > 2:
                         break
+                    if "ratings" in dish["info"] and "aggregatedRating" in dish["info"]["ratings"] and "rating" in dish["info"]["ratings"]["aggregatedRating"]:
+                        rating = dish["info"]["ratings"]["aggregatedRating"]["rating"]
                     dish_obj = {
                         "id": dish["info"]["id"],
+                        "rating": rating,
+                        "price": dish["info"]["price"]/100,
                         "name": re.sub(r'[^A-Za-z0-9 ]+', '', dish["info"]["name"]),
                         "imageId": image_url_prefix + dish["info"]["imageId"]
                     }
