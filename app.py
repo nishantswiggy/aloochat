@@ -173,6 +173,7 @@ def send_message(response_data):
         "Content-Type": "application/json"
     }
 
+    print(f"response_data: {response_data}")
     # Send the response to WhatsApp API
     response = requests.post(WHATSAPP_API_URL, json=response_data, headers=headers)
 
