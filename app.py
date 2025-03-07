@@ -53,7 +53,7 @@ def convert_json(data):
             # Add each item as a row in the restaurant's section
             row = {
                 "id": item["id"],
-                "description": str(random.randint(15, 25))  + " mins",
+                "description": "delivering in " + str(random.randint(15, 25)) + " mins \U0001F680",
                 "title": item["name"][:21] + "..." if len(item["name"]) > 21 else item["name"],
             }
             section["rows"].append(row)
@@ -130,9 +130,9 @@ def handle_final_confirmation_message(message, to_number):
         list_reply_id = list_reply.get("id", "N/A")
         list_reply_title = list_reply.get("title", "No title")
         list_reply_description = list_reply.get("description", "No description")
-        custom_str = f"Thank you, your order has been placed."
+        custom_str = f"Thank you, your order has been placed.:rocket:"
 
-        amitabhTTS.get_amitabh_audio(ChatResponse(conversation_id='123', response='Sehenshah khush hua Deepinder ko dukh hua', state=''))
+        amitabhTTS.get_amitabh_audio(ChatResponse(conversation_id='123', response='Harshaa khush hua, Deepee ko dukh hua', state=''))
         send_text_message(to_number, custom_str)
         send_media_message(to_number)
         send_static_whatsapp_image(to_number, custom_str)
@@ -182,7 +182,7 @@ def send_interactive_text_message(to_number, text_body):
                 "text": "Which restaurant option do you prefer?"
             },
             "footer": {
-                "text": "Lucky Shrub: Your gateway to succulents™"
+                "text": ""
             },
             "action": text_body
         }
