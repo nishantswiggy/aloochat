@@ -1,9 +1,6 @@
 import random
 
 import requests
-import json
-import uvicorn
-import requests
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Dict, Optional, List
@@ -11,9 +8,6 @@ from datetime import datetime
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import AIMessage, HumanMessage
 import ast
-
-ConversationID = ""
-
 
 def call_ds(message, conversation_id):
     # Headers
