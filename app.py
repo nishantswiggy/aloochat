@@ -189,50 +189,50 @@ def health_check():
         "status": "success"
     })
 
-def send_media_message(to_number):
 
-        # Step 1: Upload the audio file to WhatsApp API
-        url = f'https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/media'
-        headers = {
-            'Authorization': f'Bearer {ACCESS_TOKEN}'
+def send_media_message(to_number):
+    # Step 1: Upload the audio file to WhatsApp API
+    url = f'https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/media'
+    headers = {
+        'Authorization': f'Bearer {ACCESS_TOKEN}'
+    }
+
+    AUDIO_FILE_PATH = "amitabh_audio.mp3"
+
+    if not os.path.exists(AUDIO_FILE_PATH):
+        print("Error: File does not exist!")
+    elif os.path.getsize(AUDIO_FILE_PATH) == 0:
+        print("Error: File is empty!")
+    else:
+        print("File is valid.")
+    # Send the audio file to WhatsApp API
+    with open("amitabh_audio.mp3", 'rb') as file:
+        files = {
+            'file': ('amitabh_audio.mp3', open(AUDIO_FILE_PATH, 'rb'), "audio/mpeg"),
+            'messaging_product': (None, "whatsapp")
+        }
+        print(f'Media file: {file}')
+        response = requests.post(url, headers=headers, files=files)
+
+    print(f'Media Response: {response}')
+    # Step 2: Check if media upload was successful
+    if response.status_code == 200:
+        media_data = response.json()
+        media_id = media_data['id']  # Extract the media ID from the response
+
+        # Step 3: Send the audio file to the recipient
+        message_url = f'https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/messages'
+        message_payload = {
+            "messaging_product": "whatsapp",
+            "to": to_number,
+            "type": "audio",
+            "audio": {
+                "id": media_id
+            }
         }
 
-        # Send the audio file to WhatsApp API
-        with open("amit.mp3", 'rb') as file:
-            files = {
-                'file': file,
-                'type': (None, "audio/mp3"),
-            }
-            print(f'Media file: {file}')
-            response = requests.post(url, headers=headers, files=files)
-
-        print(f'Media Response: {response}')
-        # Step 2: Check if media upload was successful
-        if response.status_code == 200:
-            media_data = response.json()
-            media_id = media_data['id']  # Extract the media ID from the response
-
-            # Step 3: Send the audio file to the recipient
-            message_url = f'https://graph.facebook.com/v22.0/{PHONE_NUMBER_ID}/messages'
-            message_payload = {
-                "messaging_product": "whatsapp",
-                "to": to_number,
-                "type": "audio",
-                "audio": {
-                    "id": media_id
-                }
-            }
-
-            # Send the message with the uploaded audio
-            message_response = requests.post(message_url, headers=headers, json=message_payload)
-
-            # Handle message send response
-            if message_response.status_code == 200:
-                return jsonify({"status": "success", "message": "Audio sent successfully!"})
-            else:
-                return jsonify({"status": "error", "message": f"Failed to send audio: {message_response.status_code}, {message_response.text}"}), 400
-        else:
-            return jsonify({"status": "error", "message": f"Failed to upload audio: {response.status_code}, {response.text}"}), 400
+        # Send the message with the uploaded audio
+        message_response = requests.post(message_url, headers=headers, json=message_payload)
 
 
 def handle_media_message(message, media_type, to_number):

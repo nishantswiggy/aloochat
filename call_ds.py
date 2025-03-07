@@ -95,7 +95,7 @@ def format_messages_for_bedrock(messages: List) -> List[Dict[str, str]]:
 # Update the query_bedrock_llm function to include personality
 
 def query_bedrock_llm(messages: List[Dict[str, str]], personality: str = 'normal') -> str:
-    """Query Bedrock LLM API with conversation history and personality."""
+
 
     headers = {
         "x-api-key": "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",
@@ -103,7 +103,7 @@ def query_bedrock_llm(messages: List[Dict[str, str]], personality: str = 'normal
         "anthropic-version": "2023-06-01"
     }
 
-    system_message = "You are a concise assistant for Swiggy to help customers discover their next order. Be concise and focus primarily on the most recent message. Only respond for queries related to only food delivery. Politely decline discussing any other topic and try to veer the conversation towards food delivery"
+    system_message = "You are an assistant for Swiggy to help customers discover their next order. Be concise and focus primarily on the most recent message. Only respond for queries related to only food delivery. Politely decline discussing any other topic and try to veer the conversation towards food delivery"
     if personality == 'funny':
         system_message += " Your responses should be humorous and witty."
     else:
@@ -260,7 +260,7 @@ def chat_endpoint(user_id_arg, message_arg, conversation_id_arg, personality_arg
     search_query = []
     if conversation_state == "searching_food":
         search_query = get_food_keywords(message, "veg")
-        return ChatResponse(conversation_id=conversation_id, response="", state=conversation_state,
+        return ChatResponse(conversation_id=conversation_id, response="I Am at your service", state=conversation_state,
                             search_query=search_query)
 
     response = query_bedrock_llm(formatted_history, personality=personality)
