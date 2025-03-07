@@ -12,7 +12,7 @@ import tranformItemData
 from image_to_keyword import analyze_image
 import random
 
-
+from call_ds import ChatResponse
 
 # conf.get_default().verify_ssl = False
 # Add this line before connecting
@@ -131,7 +131,8 @@ def handle_final_confirmation_message(message, to_number):
         list_reply_title = list_reply.get("title", "No title")
         list_reply_description = list_reply.get("description", "No description")
         custom_str = f"Thank you, your order has been placed."
-        amitabhTTS.get_amitabh_audio('Sehenshah khush hua Deepinder ko dukh hua')
+
+        amitabhTTS.get_amitabh_audio(ChatResponse(conversation_id='123', response='Sehenshah khush hua Deepinder ko dukh hua', state=''))
         send_text_message(to_number, custom_str)
         send_media_message(to_number)
         send_static_whatsapp_image(to_number, custom_str)
