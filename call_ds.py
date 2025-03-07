@@ -260,22 +260,10 @@ def chat_endpoint(user_id_arg, message_arg, conversation_id_arg, personality_arg
             ["Namaskar! Main Amitabh Bachchan bol raha hoon. Khaane mein kya chalega?",
              "Aaj kya lock karein khane main?",
              "Swad anusar chunav karein! Khane mein kya pasand hai?",
-             "Kaun Banega Bhukkad? Aaj kya special bane?",
-             "Amitabh Bachchan bol raha hoon, aaj khaane ka shubh muhurat kya hai?",
              "Aaj ka swaad kya hoga—spicy ya sweet?",
              "Aap bataiye, khaane mein kaunsi dish superstar banegi?",
              "Swagat hai khaane ke mahotsav mein! Kya pasand karenge?",
-             "Khaane ki ghooshna ho chuki hai! Aaj kya banta hai?",
              "Aaj khaane ka plan tight hai ya diet hai?",
-             "Eyy macha! Biriyani na bajji? Yen order madona?",
-             "Aaj kal ka diet chod de re, Vada Pav ya Misal Pav?",
-             "Inniku Sapadku enna venum? Sambar saadam-a illa pizza-a?",
-             "Dosa ke rice bath? Yen taste thumba hotthu?",
-             "Khaayla kai venum? Idli sambar-a illa Poori masala-a?",
-             "Bhookh lagi hai ya mood mein swag hai? Burger ya Pav Bhaji?",
-             "Tiffin fix cheddama? Biryani leka Dosa?",
-             "Ithu tea time-a? Samosa vechikiriya illa filter coffee?",
-             "Khaau pyaayla kaay havay? Misal Pav ki Pithla Bhakri?"
              ]), state=conversation_state,
                             search_query=search_query)
 
