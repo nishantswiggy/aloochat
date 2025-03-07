@@ -107,7 +107,7 @@ def query_bedrock_llm(messages: List[Dict[str, str]], personality: str = 'normal
 
     payload = {
         "model": "claude-3-5-sonnet-20241022",
-        "max_tokens": 512,
+        "max_tokens": 256,
         "system": system_message,
         "messages": messages
     }
@@ -142,7 +142,7 @@ def define_state(conversation_history: List[Dict[str, str]]) -> str:
 
     payload = {
         "model": "claude-3-5-sonnet-20241022",
-        "max_tokens": 512,
+        "max_tokens": 256,
         "system": "You are a strict classifier. You must return ONLY 'search' or 'chatting'. No extra text. 'search' is the state when the user mentions some intent to order food",
         "messages": [
             {"role": "user", "content": "Here is the chat history:\n" + str(
@@ -192,7 +192,7 @@ def get_food_keywords(description, veg_preference):
     }
     data = {
         "model": "claude-3-5-sonnet-20241022",
-        "max_tokens": 512,
+        "max_tokens": 256,
         "messages": [
             {
                 "role": "user",

@@ -46,7 +46,7 @@ def analyze_image(image_path):
 
     data = {
         "model": "claude-3-7-sonnet-20250219",
-        "max_tokens": 512,
+        "max_tokens": 256,
         "messages": [
             {
                 "role": "user",
