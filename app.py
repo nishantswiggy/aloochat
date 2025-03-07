@@ -130,7 +130,7 @@ def handle_final_confirmation_message(message, to_number):
         list_reply_id = list_reply.get("id", "N/A")
         list_reply_title = list_reply.get("title", "No title")
         list_reply_description = list_reply.get("description", "No description")
-        custom_str = f"Thank you, your order has been placed.:rocket:"
+        custom_str = f"Thank you, your order has been placed.\U0001F680"
 
         amitabhTTS.get_amitabh_audio(ChatResponse(conversation_id='123', response='Harshaa khush hua, Deepee ko dukh hua', state=''))
         send_text_message(to_number, custom_str)
